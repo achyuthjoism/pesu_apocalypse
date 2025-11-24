@@ -1,22 +1,25 @@
 import pygame
-from constants import *
 import math
 
+HEIGHT = 720
+WIDTH = 1280
+
 class Image(pygame.sprite.Sprite):
-    def __init__(self,image:str,x,y):
+    def __init__(self,image:str,x,y,animate=True):
         super().__init__()
         self.image = pygame.image.load(image).convert()
         self.name = image[:image.find('.')]
         self.rect = self.image.get_rect(midbottom=(x,y))
         self.j = 0
         self.y = y
+        self.is_animate = animate
 
     def animate(self):
         self.j += 0.1
         self.rect.bottom = self.y + math.sin(self.j)*7
 
     def update(self):
-        self.animate()
+        if self.is_animate: self.animate()
 
 class Text(pygame.sprite.Sprite):
     def __init__(self, txt, x:int, y:int, size, color='Black', font_path='assets/ByteBounce.ttf', align='center'):
