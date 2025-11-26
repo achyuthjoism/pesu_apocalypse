@@ -34,7 +34,3 @@ class Start:
         self.images.draw(game.screen)
         self.strings.draw(game.screen)
         self.buttons.draw(game.screen)
-
-
-
-
