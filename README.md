@@ -1,150 +1,102 @@
-# PESU Apocalypse 🧟
+# PESU Apocalypse - Escape the Zombies!
 
-Can you escape the apocalypse? Navigate a zombie-infested grid and flag all the undead before it's too late!
+A zombie-themed grid-based puzzle game built with Pygame where players must identify and flag all zombies while avoiding humans.
 
-## 🎮 Game Overview
+## Game Overview
 
-PESU Apocalypse is a grid-based survival game where you must locate and flag all hidden zombies while avoiding standing on them for too long. Use audio cues and distance indicators to hunt down the zombies before they get you!
+Navigate through a grid filled with characters and use audio cues to find hidden zombies. Flag all zombies without flagging any humans to win! Be careful not to stand on a zombie for too long, or it's game over.
 
-## ✨ Features
+## Features
 
-- **Grid-based Movement**: Navigate a 10x24 grid using WASD or arrow keys
-- **Proximity Audio System**: Audio cues change based on your distance to the nearest zombie
-  - Safe sound: Distance > 2 tiles
-  - Close sound: Distance = 2 tiles  
-  - Danger sound: Distance = 1 tile
-- **Flag System**: Mark suspected zombie locations with flags (press F)
-- **Distance Tracking**: Real-time display of distance to nearest zombie
-- **Game Over Mechanic**: Standing on a zombie tile for too long triggers game over
-- **Victory Condition**: Flag all zombies to win!
+- **Grid-based gameplay**: 10x24 grid with 50+ characters
+- **Audio proximity system**: Sound cues indicate how close you are to zombies
+- **Strategic flagging**: Mark zombies while avoiding innocent humans
+- **Multiple screens**: Start menu, gameplay, victory, and game over screens
+- **Visual feedback**: Character sprites and flagging indicators
 
-## 🚀 Getting Started
-
-### Prerequisites
+## Requirements
 
 - Python 3.x
 - Pygame library
 
-### Installation
+## Installation
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd pesu-apocalypse
-```
-
-2. Install dependencies:
+1. Clone or download this repository
+2. Install Pygame:
 ```bash
 pip install pygame
 ```
 
-3. Run the game:
+3. Ensure all required asset files are in the `assets/` directory:
+   - `background.png` - Start screen background
+   - `ByteBounce.ttf` - Game font
+   - `modal_down_trans.png` - Player sprite
+   - `modal1.png`, `modal2.png`, `modal3.png`, `modal4.png` - Character sprites
+   - `audio_safe.wav` - Safe distance sound
+   - `audio_close.wav` - Close proximity sound
+   - `audio_danger.wav` - Danger sound
+   - `audio_gameover.wav` - Game over sound
+
+## How to Play
+
+1. Run the game:
 ```bash
 python main.py
 ```
 
-## 🎯 How to Play
+2. **Controls:**
+   - **WASD** or **Arrow Keys**: Move the player
+   - **F**: Flag/unflag the current tile
+   - **R**: Restart (on game over/victory screens)
+   - **H**: Return to home screen
+   - **Q**: Quit game
 
-1. **Start the Game**: Click the "Start" button on the main menu
-2. **Movement**: Use WASD or Arrow Keys to move your character across the grid
-3. **Flag Zombies**: Press F to place/remove a flag on your current tile
-4. **Listen Carefully**: Audio cues indicate proximity to zombies
-5. **Check Distance**: The bottom of the screen shows the distance to the nearest zombie
-6. **Win Condition**: Flag all 10 zombies to achieve victory
-7. **Avoid Game Over**: Don't stand on a zombie tile for too long!
+3. **Objective:**
+   - Find and flag all 10 zombies hidden in the grid
+   - Use audio cues to gauge proximity to zombies
+   - Avoid flagging humans (game over!)
+   - Don't stand on a zombie for too long (game over!)
 
-### Controls
+4. **Audio Cues:**
+   - Different sounds play based on your distance to the nearest zombie
+   - Use these cues strategically to locate zombies
 
-- **WASD / Arrow Keys**: Move player
-- **F**: Flag/unflag current tile
-- **R**: Restart game (on game over/victory screen)
-- **H**: Return to home screen
-- **Q**: Quit game
+## Game States
 
-## 📁 Project Structure
+- **Start Screen**: Main menu with start and exit options
+- **Playing**: Active gameplay with grid navigation
+- **Victory**: All zombies successfully flagged
+- **Game Over**: Failed by flagging a human or standing on a zombie
+
+## File Structure
 
 ```
-pesu-apocalypse/
+.
 ├── main.py              # Entry point
 ├── game.py              # Main game loop and state management
 ├── helper.py            # Helper classes (Image, Text, Button)
-├── player.py            # Player and Grid classes
-├── zombie.py            # Zombie and ZombieManager classes
+├── player.py            # Player movement and grid system
+├── zombie.py            # Zombie and NPC management
 ├── screens/
 │   ├── start.py         # Start screen
 │   ├── play_board.py    # Main gameplay screen
 │   ├── game_over.py     # Game over screen
 │   └── victory.py       # Victory screen
-├── assets/              # Game assets (images, audio, fonts)
-└── README.md
+└── assets/              # Game assets (images, fonts, audio)
 ```
 
-## 🔊 Audio Files
-
-The game requires the following audio files in the `assets/` directory:
-
-- `audio_safe.wav` - Plays when zombies are far away (distance > 2)
-- `audio_close.wav` - Plays when zombies are moderately close (distance = 2)
-- `audio_danger.wav` - Plays when zombies are very close (distance = 1)
-- `audio_gameover.wav` - Plays when game over is triggered
-
-**Note**: The game will still run without audio files but you'll see a warning message.
-
-## 🎨 Required Assets
-
-Place these files in the `assets/` directory:
-
-- `background.png` - Start screen background
-- `modal_down_trans.png` - Player sprite
-- `dboos.jpg` - Game hero image
-- `renu.jpg` - Game villain image
-- `renu_zombie.png` - Zombie character image
-- `ByteBounce.ttf` - Game font
-- Audio files (see above)
-
-## 🎓 Game Mechanics
-
-### Zombie Detection
-
-- **10 zombies** are randomly placed on the grid (never on the starting position)
-- Zombies remain hidden until flagged
-- Distance is calculated using Manhattan distance (|row1 - row2| + |col1 - col2|)
-
-### Inspection Timer
-
-- Standing on a zombie tile for **37 frames** (~0.6 seconds at 60 FPS) triggers game over
-- Move away from the tile to reset the timer
-
-### Win Condition
-
-- Successfully flag all 10 zombie locations to win
-- Flags can be placed and removed freely
-
-## 🛠️ Technical Details
-
-- **Resolution**: 1280x720
-- **Frame Rate**: 60 FPS
-- **Grid Size**: 10 rows × 24 columns
-- **Cell Size**: 50 pixels
-- **Engine**: Pygame
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-
-- Report bugs
-- Suggest new features
-- Submit pull requests
-
-## 📝 Credits
+## Credits
 
 - Audio and distance-finding algorithm generated using AI
-- Grid drawing function generated using AI
+- Grid drawing generated using AI
 
-## 📄 License
+## Notes
 
-This project is open source and available for educational purposes.
+- The game spawns 10 zombies randomly across the grid
+- 50 NPCs (humans) are also randomly placed
+- Player always starts at position (0, 0)
+- Standing on a zombie for 37 frames (~0.6 seconds at 60 FPS) results in game over
 
----
+## License
 
-**Good luck surviving the PESU Apocalypse!** 🧟‍♂️💀
+This is an educational project. Please ensure you have appropriate rights to any assets used.
