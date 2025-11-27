@@ -18,6 +18,7 @@ class PlayBoard:
         self.buttons = pygame.sprite.Group()
         self.buttons.add(self.back_button)
 
+
         """Grid Offset(Need improvement)"""
         self.grid_offset_x = 50
         self.grid_offset_y = 180
@@ -65,8 +66,9 @@ class PlayBoard:
             self.buttons.draw(game.screen)
             grid_surface = pygame.Surface((self.grid.cols*self.grid.cell_size,self.grid.rows*self.grid.cell_size))
             grid_surface.fill('Black')
+            self.zombie_manager.spawn_npcs(grid_surface)
+            self.zombie_manager.render_zombies(grid_surface)
             self.modal.render_on_surface(grid_surface)
-            self.zombie_manager.render_flags(grid_surface)
             self.grid.draw(grid_surface)
             game.screen.blit(grid_surface, (self.grid_offset_x, self.grid_offset_y))
             game.screen.blit(self.stats_text.image, self.stats_text.rect)

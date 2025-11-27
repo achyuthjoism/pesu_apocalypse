@@ -14,6 +14,8 @@ class Game:
         self.display = pygame.display
         self.state = 'start'
         self.clock = pygame.time.Clock()
+        self.game_over_reason = ""
+        self.timer = None
         self.running = True
         self.start_screen = Start(self)
         self.playing_screen = PlayBoard(self)
@@ -52,7 +54,7 @@ class Game:
             self.playing_screen.render()
         elif self.state == 'game_over':
             self.playing_screen = PlayBoard(self)
-            self.game_over_screen.update()
+            self.game_over_screen.update(reason=str(self.game_over_reason))
             self.game_over_screen.render()
         elif self.state == 'victory':
             self.playing_screen = PlayBoard(self)

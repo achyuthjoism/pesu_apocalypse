@@ -6,12 +6,46 @@ if TYPE_CHECKING:
     from game import Game
     from player import Grid
 
-class Zombie:
-    def __init__(self, row: int, col: int):
+npcs = ['assets/modal1.png','assets/modal2.png','assets/modal3.png','assets/modal4.png']
+
+class NPC:
+    def __init__(self,grid,row:int,col:int,image='assets/modal1.png'):
         self.row = row
         self.col = col
+        self.grid = grid
         self.is_flagged = False
-        self.is_revealed = False
+        cell = self.grid.cell_size
+        x = self.col * cell + cell // 2
+        y = self.row * cell + cell // 2
+        self.modal = pygame.image.load(image).convert_alpha()
+        self.modalRect = self.modal.get_rect(center=(x,y))
+
+    def render(self,surface):
+        surface.blit(self.modal, self.modalRect)
+
+class Zombie:
+    def __init__(self, grid, row: int, col: int, image='assets/modal1.png'):
+        self.row = row
+        self.col = col
+        self.grid = grid
+        self.is_flagged = False
+        cell = self.grid.cell_size
+        x = self.col * cell + cell // 2
+        y = self.row * cell + cell // 2
+        self.modal = pygame.image.load(image).convert_alpha()
+        self.modalRect = self.modal.get_rect(center=(x, y))
+
+    def render(self, surface):
+        if self.is_flagged:
+            cell = self.grid.cell_size
+            x = self.col * cell + cell // 2
+            y = self.row * cell + cell // 2
+            font = pygame.font.Font('assets/ByteBounce.ttf', 36)
+            flag_text = font.render('F', True, 'Yellow')
+            flag_rect = flag_text.get_rect(center=(x, y))
+            surface.blit(flag_text, flag_rect)
+        else:
+            surface.blit(self.modal, self.modalRect)
 
 class ZombieManager:
     def __init__(self, game: "Game", grid: "Grid", num_zombies):
@@ -25,6 +59,7 @@ class ZombieManager:
         self.inspection_delay = 37
         self.is_inspecting = False
         self.inspecting_position = None
+        self.npc_objects = []
 
         # Audio setup (placeholder files)
         pygame.mixer.init()
@@ -48,6 +83,8 @@ class ZombieManager:
         self.last_distance = -1
 
         self.spawn_zombies()
+        self.gen_npc()
+
 
     def spawn_zombies(self):
         positions = []
@@ -59,7 +96,29 @@ class ZombieManager:
         random.shuffle(positions)
         for i in range(min(self.num_zombies, len(positions))):
             r, c = positions[i]
-            self.zombies.append(Zombie(r, c))
+            zombie = Zombie(self.grid, r, c, image=random.choice(npcs))
+            self.zombies.append(zombie)
+
+    def gen_npc(self):
+        all_positions = set()
+        zombie_positions = set()
+        for zombie in self.zombies:
+            zombie_positions.add((zombie.row, zombie.col))
+
+        for r in range(self.grid.rows):
+            for c in range(self.grid.cols):
+                all_positions.add((r, c))
+
+        npc_positions = random.sample(list(all_positions - zombie_positions), 50)
+
+        self.npc_objects = []
+        for row, col in npc_positions:
+            npc = NPC(self.grid, row, col, image=random.choice(npcs))
+            self.npc_objects.append(npc)
+
+    def spawn_npcs(self, surface):
+        for npc in self.npc_objects:
+            npc.render(surface)
 
     def get_zombie_at(self, row: int, col: int):
         for zombie in self.zombies:
@@ -83,19 +142,15 @@ class ZombieManager:
         """Play audio based on distance to nearest zombie"""
         distance = self.get_nearest_zombie_distance(player_row, player_col)
 
-        # Only play new audio if distance changed
         if distance == self.last_distance:
             return
 
         self.last_distance = distance
 
-        # Stop current audio
         if self.current_audio_channel:
             self.current_audio_channel.stop()
 
-        # Play appropriate audio
         if distance == 0:
-            # Player is on zombie tile - handled separately
             pass
         elif distance == 1:
             if self.audio_danger:
@@ -107,7 +162,21 @@ class ZombieManager:
             if self.audio_safe:
                 self.current_audio_channel = self.audio_safe.play()
 
+    def get_npc_at(self, row: int, col: int):
+        for npc in self.npc_objects:
+            if npc.row == row and npc.col == col:
+                return npc
+        return None
+
     def flag_tile(self, player_row: int, player_col: int):
+        npc = self.get_npc_at(player_row, player_col)
+        if npc:
+            self.game_over = True
+            self.game.game_over_reason = 'You Flagged A Human!!'
+            if self.audio_game_over:
+                self.audio_game_over.play()
+            return
+
         zombie = self.get_zombie_at(player_row, player_col)
         if zombie:
             zombie.is_flagged = not zombie.is_flagged
@@ -122,6 +191,7 @@ class ZombieManager:
 
             if self.inspection_timer >= self.inspection_delay:
                 self.game_over = True
+                self.game.game_over_reason = "You stood on a zombie too long!"
                 if self.audio_game_over:
                     self.audio_game_over.play()
                 return True
@@ -146,15 +216,7 @@ class ZombieManager:
         self.play_proximity_audio(player_row, player_col)
         self.check_game_over(player_row, player_col)
 
-    def render_flags(self, surface):
-        """Draw flags on flagged tiles"""
-        cell = self.grid.cell_size
-        font = pygame.font.Font(None, 36)
 
+    def render_zombies(self, surface):
         for zombie in self.zombies:
-            if zombie.is_flagged:
-                x = zombie.col * cell + cell // 2
-                y = zombie.row * cell + cell // 2
-                flag_text = font.render('F', True, 'Yellow')
-                flag_rect = flag_text.get_rect(center=(x, y))
-                surface.blit(flag_text, flag_rect)
+            zombie.render(surface)
